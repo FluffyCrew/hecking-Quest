@@ -1,98 +1,105 @@
+#pragma once
+
 #include "main.h"
+#include "Environment.h"
 
 class Creatures {
 public:
+	//Konstruktor
 	Creatures();
-	Creatures(Textures tex, int x, int y, int w, int h, int hea, int str, int spe);
+	Creatures(float x, float y, int w, int h, int hea, int str, float spe, float jSpe, float fSpe, int jumpH);
 	//FrameVariabeln
 	int walkFrame;
 	int idleFrame;
+	int jumpFrame;
+	int fallFrame;
+	int glideFrame;
 	SDL_RendererFlip flipType;
 	SDL_Rect currentFrame;
 
 	bool sprintFlag;
-
-	//Frames	
-	static const int IDLE_FRAMES_COUNT = 1;
-	static const int WALK_FRAMES_COUNT = 1;
-	static const int HIT_FRAMES_COUNT = 1;
-	static const int DUCK_FRAMES_COUNT = 1;
-
-	static const int IDLE_FRAMES_SPEED = 1;
-	static const int WALK_FRAMES_SPEED = 1;
-	static const int WALK_FRAMES_SPEED_S = 1;
-	static const int HIT_FRAMES_SPEED = 1;
-	static const int DUCK_FRAMES_SPEED = 1;
-
-	SDL_Rect idleUpFrameclip[IDLE_FRAMES_COUNT];
-	SDL_Rect idleDownFrameclip[IDLE_FRAMES_COUNT];
-	SDL_Rect idleSideFrameclip[IDLE_FRAMES_COUNT];
-
-	SDL_Rect walkUpFrameclip[WALK_FRAMES_COUNT];
-	SDL_Rect walkDownFrameclip[WALK_FRAMES_COUNT];
-	SDL_Rect walkSideFrameclip[WALK_FRAMES_COUNT];
-
-	SDL_Rect hitFrameclip[HIT_FRAMES_COUNT];
-	SDL_Rect duckFrameclip[DUCK_FRAMES_COUNT];
+	
+	//Kollisionserkennung
+	bool col;
+	bool colLeft;
+	bool colRight;
+	bool colUp;
+	bool colDown;
+	bool checkCollision(Creatures obj);
+	bool checkCollision(SDL_Rect rct);
+    bool checkWhatCollision(Environment obj);
+	void resetCollision();
 
 	//State
-	enum State { sIdle, sWalkingU, sWalkingD, sWalkingL, sWalkingR };
+	enum State { sIdle, sWalking, sFalling, sGliding, sJumping, sDucking, sPunching};
 	enum Facing { fUp, fDown, fLeft, fRight };
 	Facing facing;
 	State state;
 
 	//Position
-	int getPosX(),
+	float getPosX(), 
 		getPosY();
-	void setPosX(int x),
-		 setPosY(int y);
+	void setPosX(float x), 
+		setPosY(float y);
 	
 	//Dimensionen
-	int getWidth(),
+	int getWidth(), 
 		getHeight();
-	void setWidth(int w),
+	void setWidth(int w), 
 		setHeight(int h);
 
 	//Charakterstats
-	void setHealth(int h),
-		setStrength(int s),
-		setSpeed(int s);
-	int getHealth(),
-		getStrength(),
-		getSpeed();
-	void kill(),
+	void setHealth(int h), 
+		setStrength(int s), 
+		setSpeed(float s), 
+		setFallingSpeed(float s);
+	int getHealth(), 
+		getStrength(), 
+		getJumpHeight();
+	float getSpeed(), 
+		getFallingSpeed(), 
+		getJumpSpeed();
+	void kill(), 
 		revive();
 
 	//Bewegung
-	void moveUp(int s, bool r),
-		moveDown(int s, bool r),
-		moveLeft(int s, bool r),
-		moveRight(int s, bool r);
+	void moveUp(float s, bool r),
+		moveDown(float s, bool r),
+		moveLeft(float s, bool r),
+		moveRight(float s, bool r);
+	void setJumpHeightFlag(int x);
+	int getJumpHeightFlag();
 
 	//Hitbox
 	void setHitbox(SDL_Rect hb);
-	void setHitboxX(int x);
-	void setHitboxY(int y);
+	void setPunchHB(SDL_Rect hb);
+	SDL_Rect getPunchHB();
+	void setHitboxX(float x);
+	void setHitboxY(float y);
+	void setPunchHBX(int x);
+	void setPunchHBY(int y);
 	SDL_Rect getHitbox();
 
 	//Texture
 	void setTexture(SDL_Texture *t);
 	//Rendern
-	void render(int x, int y, int w, int h, SDL_Rect *clip, SDL_RendererFlip flip);
+	void render(float x, float y, int w, int h, SDL_Rect *clip, SDL_RendererFlip flip);
 
 protected:	
 	//Position
-	int posX,
-		posY;
+	float posX, posY;
 
 	//Dimensionen
-	int width,
-		height;
+	int width, height;
 	
 	//Charakterstats
-	int health,
-		strength,
-		speed;
+	int health, 
+		strength, 
+		jumpHeight, 
+		jumpHeightFlag;
+	float speed, 
+		fallingSpeed, 
+		jumpSpeed;
 
 	//State
 	bool alive;
@@ -102,59 +109,53 @@ protected:
 	
 	//Hitbox
 	SDL_Rect hitbox;
+	SDL_Rect punchHB;
 };
-
 class Player : public Creatures {
 public:
-	Player(int x, int y, int w, int h, int hea, int str, int spe);
-	
+	Player(float x, float y, int w, int h, int hea, int str, float spe, float jSpe, float fSpe, int jumpH);
+
 	static const int IDLE_FRAMES_COUNT = 2;
 	static const int WALK_FRAMES_COUNT = 4;
-	static const int HIT_FRAMES_COUNT = 1;
+	static const int JUMP_FRAMES_COUNT = 3;
+	static const int FALL_FRAMES_COUNT = 1;
+	static const int GLIDE_FRAMES_COUNT = 2;
 	static const int DUCK_FRAMES_COUNT = 1;
+	static const int PUNCH_FRAMES_COUNT = 1;
 	
-	static const int IDLE_FRAMES_SPEED = 26;
-	static const int WALK_FRAMES_SPEED = 20;
-	static const int WALK_FRAMES_SPEED_S = 8;
-	static const int HIT_FRAMES_SPEED = 1;
+	static const int IDLE_FRAMES_SPEED = 40;
+	static const int WALK_FRAMES_SPEED = 8;
+	static const int JUMP_FRAMES_SPEED = 4;
+	static const int FALL_FRAMES_SPEED = 14;
+	static const int GLIDE_FRAMES_SPEED = 4;
 	static const int DUCK_FRAMES_SPEED = 1;
+	static const int PUNCH_FRAMES_SPEED = 1;
 
-	SDL_Rect idleUpFrameclip[IDLE_FRAMES_COUNT];
-	SDL_Rect idleDownFrameclip[IDLE_FRAMES_COUNT];
-	SDL_Rect idleSideFrameclip[IDLE_FRAMES_COUNT];
-
-	SDL_Rect walkUpFrameclip[WALK_FRAMES_COUNT];
-	SDL_Rect walkDownFrameclip[WALK_FRAMES_COUNT];
-	SDL_Rect walkSideFrameclip[WALK_FRAMES_COUNT];
-
-	SDL_Rect hitFrameclip[HIT_FRAMES_COUNT];
+	SDL_Rect idleFrameclip[IDLE_FRAMES_COUNT];
+	SDL_Rect walkFrameclip[WALK_FRAMES_COUNT];
+	SDL_Rect jumpFrameclip[JUMP_FRAMES_COUNT];
+	SDL_Rect fallFrameclip[FALL_FRAMES_COUNT];
+	SDL_Rect glideFrameclip[GLIDE_FRAMES_COUNT];
 	SDL_Rect duckFrameclip[DUCK_FRAMES_COUNT];
+	SDL_Rect punchFrameclip[DUCK_FRAMES_COUNT];
+	SDL_Rect dedFrameclip;
+
+private:
+
 };
 
 class Bat : public Creatures {
 public:
-	Bat( int x, int y, int w, int h, int hea, int str, int spe);
-	
-	static const int IDLE_FRAMES_COUNT = 4;
+	Bat();
+
+	static const int IDLE_FRAMES_COUNT = 2;
 	static const int HIT_FRAMES_COUNT = 1;
-	static const int DUCK_FRAMES_COUNT = 1;
 
 	static const int IDLE_FRAMES_SPEED = 10;
 	static const int WALK_FRAMES_SPEED = 1;
-	static const int WALK_FRAMES_SPEED_S = 1;
-	static const int HIT_FRAMES_SPEED = 1;
-	static const int DUCK_FRAMES_SPEED = 1;
 
-	SDL_Rect idleUpFrameclip[IDLE_FRAMES_COUNT];
-	SDL_Rect idleDownFrameclip[IDLE_FRAMES_COUNT];
-	SDL_Rect idleSideFrameclip[IDLE_FRAMES_COUNT];
-
-	SDL_Rect walkUpFrameclip[WALK_FRAMES_COUNT];
-	SDL_Rect walkDownFrameclip[WALK_FRAMES_COUNT];
-	SDL_Rect walkSideFrameclip[WALK_FRAMES_COUNT];
-
+	SDL_Rect idleFrameclip[IDLE_FRAMES_COUNT];
 	SDL_Rect hitFrameclip[HIT_FRAMES_COUNT];
-	SDL_Rect duckFrameclip[DUCK_FRAMES_COUNT];
 	
 	void followPlayer(Player player);
 private:

@@ -1,7 +1,7 @@
 #include "main.h"
 #include "Textures.h"
 #include "Creatures.h"
-
+#include "Environment.h"
 
 Textures::Textures(){
 	width = 100;
@@ -54,9 +54,14 @@ SDL_Texture *Textures::getTexture(){
 }
 
 //Rendern
+void Textures::render(int x, int y){
+	SDL_Rect renderQuad = { x - camera.x, y, 10, 10};
+
+	SDL_RenderCopy(mainRenderer, texture, NULL, &renderQuad);
+}
 void Textures::render(int x, int y, int w, int h, SDL_Rect *clip, SDL_RendererFlip flip) {
 	//Renderposition & Dimension
-	SDL_Rect renderQuad = { x, y, width, height };	//Renderquad wird generiert. Wenn w & h leer bleiben, wird width/height der Textur gebraucht
+	SDL_Rect renderQuad = { x - camera.x, y, width, height };	//Renderquad wird generiert. Wenn w & h leer bleiben, wird width/height der Textur gebraucht
 
 													//Wenn ein Rect angegeben wird, wird deren Dimension übernommen
 	if (clip != NULL) {
@@ -83,5 +88,3 @@ void Textures::freeTexture() {
 		height = 0;
 	}
 }
-
-

@@ -1,10 +1,20 @@
 #include "main.h"
 #include "Textures.h"
 #include "Creatures.h"
+#include "Environment.h"
 
 Creatures::Creatures(){
+	//Kollisionserkennung
+	colUp = false;
+	colDown = false;
+	colLeft = false;
+	colRight = false;
+
 	walkFrame = 0;
 	idleFrame = 0;
+	jumpFrame = 0;
+	fallFrame = 0;
+	glideFrame = 0;
 	sprintFlag = false;
 
 	posX = 0;
@@ -20,10 +30,18 @@ Creatures::Creatures(){
 	alive = true;
 }
 
-Creatures::Creatures(Textures tex, int x, int y, int w, int h, int hea, int str, int spe) {
+Creatures::Creatures(float x, float y, int w, int h, int hea, int str, float spe, float jSpe, float fSpe, int jumpH) {
+	//Kollisionserkennung
+	colUp = false;
+	colDown = false;
+	colLeft = false;
+	colRight = false;
 	//Variabeln initialisieren
 	walkFrame = 0;
 	idleFrame = 0;
+	jumpFrame = 0;
+	fallFrame = 0;
+	glideFrame = 0;
 	sprintFlag = false;
 	alive = true;
 	//Position
@@ -36,22 +54,105 @@ Creatures::Creatures(Textures tex, int x, int y, int w, int h, int hea, int str,
 	health = hea;
 	strength = str;
 	speed = spe;
+	fallingSpeed = fSpe;
+	jumpHeight = jumpH;
 }
 
+//Kollisionserkennung
+bool Creatures::checkCollision(Creatures obj){
+	bool collisionX = false;
+	bool collisionY = false;
+	bool collision = false;
+	if (hitbox.x <= obj.hitbox.x + obj.hitbox.w && hitbox.x + hitbox.w >= obj.hitbox.x) {
+		collisionX = true;
+	}
+	if (hitbox.y <= obj.hitbox.y + obj.hitbox.h && hitbox.y + hitbox.h >= obj.hitbox.y) {
+		collisionY = true;
+	}
+	if (collisionX && collisionY) {
+		collision = true;
+	}
+	return collision;
+}
+bool Creatures::checkCollision(SDL_Rect rct) {
+	bool collisionX = false;
+	bool collisionY = false;
+	bool collision = false;
+	if (hitbox.x <= rct.x + rct.w && hitbox.x + hitbox.w >= rct.x) {
+		collisionX = true;
+	}
+	if (hitbox.y <= rct.y + rct.h && hitbox.y + hitbox.h >= rct.y) {
+		collisionY = true;
+	}
+	if (collisionX && collisionY) {
+		collision = true;
+	}
+	return collision;
+}
+
+bool Creatures::checkWhatCollision(Environment obj){
+	bool collisionX = false;
+	bool collisionY = false;
+	bool collision = false;
+	if (hitbox.x <= (obj.getPosX() + obj.getWidth()) && hitbox.x + hitbox.w >= obj.getPosX()) {
+		collisionX = true;
+	}
+	if (hitbox.y <= obj.getPosY() + obj.getHeight() && hitbox.y + hitbox.h >= obj.getPosY()) {
+		collisionY = true;
+	}
+	if (collisionX && collisionY) {
+		if (state == sFalling || state == sJumping || state == sGliding) {
+			if (hitbox.x <= (obj.getPosX() + 4) + (obj.getWidth() - 8) && (hitbox.x + hitbox.w) >= (obj.getPosX() + 4)) {
+				if ((hitbox.y + hitbox.h) - fallingSpeed < obj.getPosY()) {
+					colDown = true;
+					posY -= ((posY + height) - obj.getPosY());
+				}
+			}
+		}
+		else {
+			if ((hitbox.y + hitbox.h) - fallingSpeed < obj.getPosY()) {
+				colDown = true;
+				posY -= ((posY + height) - obj.getPosY());
+			}
+		}
+		if (hitbox.y + jumpSpeed > obj.getPosY() + obj.getHeight()) {
+			colUp = true;
+		}
+		if ((hitbox.x + hitbox.w) - speed < obj.getPosX()) {
+			colRight = true;
+		} 
+		if (hitbox.x + speed > obj.getPosX() + obj.getWidth()) {
+			colLeft = true;
+		}
+		collision = true;
+	}
+	return collision;
+} 
+
+
+void Creatures::resetCollision() {
+	colUp = false;
+	colDown = false;
+	colLeft = false;
+	colRight = false;
+}
+
+//
+
 //Position
-int Creatures::getPosX(){
+float Creatures::getPosX(){
 	return posX;
 }
-int Creatures::getPosY(){
+float Creatures::getPosY(){
 	return posY;
 }
 
 
-void Creatures::setPosX(int x) {
+void Creatures::setPosX(float x) {
 	posX = x;
 }
-void Creatures::setPosY(int y) {
-	posX = y;
+void Creatures::setPosY(float y) {
+	posY = y;
 }
 //
 
@@ -81,60 +182,96 @@ void Creatures::setStrength(int s) {
 //
 
 //Speed
-void Creatures::setSpeed(int s) {
+void Creatures::setSpeed(float s) {
 	speed = s;
 }
-int Creatures::getSpeed()
-{
+float Creatures::getSpeed(){
 	return speed;
+}
+void Creatures::setFallingSpeed(float s) {
+	fallingSpeed = s;
+}
+float Creatures::getFallingSpeed() {
+	return fallingSpeed;
+}
+float Creatures::getJumpSpeed() {
+	return jumpSpeed;
+}
+int Creatures::getJumpHeight() {
+	return jumpHeight;
 }
 //
 
 //Bewegung
-void Creatures::moveUp(int s, bool r){
-	if(hitbox.y >= 0){
+void Creatures::moveUp(float s, bool r){
+	if (!colUp) {
 		posY -= s;
 		if (sprintFlag) {
 			posY -= s / 2;
 		}
 	}
 }
-void Creatures::moveDown(int s, bool r) {
-	if (hitbox.y + hitbox.w <= SCREEN_HEIGHT) {
-		posY += s;
-		if (sprintFlag) {
-			posY += s / 2;
+void Creatures::moveDown(float s, bool r) {
+	if(!colDown){
+		if (hitbox.y + hitbox.h <= LEVEL_HEIGHT) {
+			posY += s;
+			if (sprintFlag) {
+				posY += s / 2;
+			}
 		}
 	}
 }
-void Creatures::moveLeft(int s, bool r) {
-	posX -= s;
-	if (sprintFlag) {
-		posX -= s/2;
-	}
-	if (posX < 0) {
-		posX = 0;
+void Creatures::moveLeft(float s, bool r) {
+	if (!colLeft) {
+		posX -= s;
+		if (sprintFlag) {
+			posX -= s / 2;
+		}
+		if (posX < 0) {
+			posX = 0;
+		}
 	}
 }
-void Creatures::moveRight(int s, bool r) {
-	posX += s;
-	if (sprintFlag) {
-		posX += s/2;
+void Creatures::moveRight(float s, bool r) {
+	if (!colRight) {
+		posX += s;
+		if (sprintFlag) {
+			posX += s / 2;
+		}
+		if (posX > LEVEL_WIDTH - width) {
+			posX = LEVEL_WIDTH - width;
+		}
 	}
-	if (posX > SCREEN_WIDTH-width) {
-		posX = SCREEN_WIDTH - width;
-	}
+}
+
+void Creatures::setJumpHeightFlag(int x) {
+	jumpHeightFlag = x;
+}
+int Creatures::getJumpHeightFlag() {
+	return jumpHeightFlag;
 }
 
 //Hitbox
 void Creatures::setHitbox(SDL_Rect hb) {
 	hitbox = hb;
 }
-void Creatures::setHitboxX(int x) {
+void Creatures::setPunchHB(SDL_Rect hb) {
+	punchHB = hb;
+}
+SDL_Rect Creatures::getPunchHB(){
+	return punchHB;
+}
+void Creatures::setHitboxX(float x) {
 	hitbox.x = x;
 }
-void Creatures::setHitboxY(int y) {
+void Creatures::setHitboxY(float y) {
 	hitbox.y = y;
+}
+void Creatures::setPunchHBX(int x) {
+	punchHB.x = x;
+}
+void Creatures::setPunchHBY(int y) {
+	punchHB.y = y;
 }
 SDL_Rect Creatures::getHitbox() {
 	return hitbox;
@@ -147,9 +284,9 @@ void Creatures::setTexture(SDL_Texture *t){
 }
 
 //Rendern
-void Creatures::render(int x, int y, int w, int h, SDL_Rect *clip, SDL_RendererFlip flip){
+void Creatures::render(float x, float y, int w, int h, SDL_Rect *clip, SDL_RendererFlip flip){
 	//Renderposition & Dimension
-	SDL_Rect renderQuad = { x, y, width, height };	//Renderquad wird generiert. Wenn w & h leer bleiben, wird width/height der Textur gebraucht
+	SDL_Rect renderQuad = { x - camera.x, y, width, height };	//Renderquad wird generiert. Wenn w & h leer bleiben, wird width/height der Textur gebraucht
 
 	//Wenn ein Rect angegeben wird, wird deren Dimension übernommen
 	if(clip != NULL){
@@ -167,12 +304,22 @@ void Creatures::render(int x, int y, int w, int h, SDL_Rect *clip, SDL_RendererF
 	SDL_RenderCopyEx(mainRenderer, texture, clip, &renderQuad, NULL, NULL, flip);
 }
 
+
+
 /* === === ==== === Player === === === === */
 
-Player::Player(int x, int y, int w, int h, int hea, int str, int spe) {
+Player::Player(float x, float y, int w, int h, int hea, int str, float spe, float jSpe, float fSpe, int jumpH) {
+	//Kollisionserkennung
+	colUp = false;
+	colDown = false;
+	colLeft = false;
+	colRight = false;
 	//Variabeln initialisieren
 	walkFrame = 0;
 	idleFrame = 0;
+	jumpFrame = 0;
+	fallFrame = 0;
+	glideFrame = 0;
 	sprintFlag = false;
 	alive = true;
 	//Position
@@ -185,40 +332,46 @@ Player::Player(int x, int y, int w, int h, int hea, int str, int spe) {
 	health = hea;
 	strength = str;
 	speed = spe;
+	fallingSpeed = fSpe;
+	jumpSpeed = jSpe;
+	jumpHeight = jumpH;
+	jumpHeightFlag = jumpH;
 }
 
 /* === === ==== === ==== === === === === */
 
 /* === === ==== === BAT === === === === */
-Bat::Bat( int x, int y, int w, int h, int hea, int str, int spe) {
+Bat::Bat(){
+	//Kollisionserkennung
+	colUp = false;
+	colDown = false;
+	colLeft = false;
+	colRight = false;
 	//Variabeln initialisieren
-	walkFrame = 0;
 	idleFrame = 0;
-	sprintFlag = false;
 	alive = true;
 	//Position
-	posX = x;
-	posY = y;
+	posX = rand()%LEVEL_WIDTH+200;
+	posY = rand()%LEVEL_HEIGHT+200;
 	//Dimensionen
-	width = w;
-	height = h;
+	width = 90;
+	height = 45;
 	//Charakterstats
-	health = hea;
-	strength = str;
-	speed = spe;
+	health = 1;
+	speed = 1;
 }
 
 void Bat::followPlayer(Player player){
-	if (player.getHitbox().x - player.getWidth() / 2 < posX) {
+	if (player.getHitbox().x < posX ) {
 		moveLeft(speed, false);
 	}
-	if (player.getHitbox().x - player.getWidth() /2 > posX) {
+	if (player.getHitbox().x > posX) {
 		moveRight(speed, false);
 	}
-	if (player.getHitbox().y + player.getHeight() / 4 < posY) {
+	if (player.getHitbox().y + player.getHeight() / 2 < posY) {
 		moveUp(speed, false);
 	}
-	if (player.getHitbox().y - player.getHeight() / 4 > posY) {
+	if (player.getHitbox().y + player.getHeight() / 6 > posY) {
 		moveDown(speed, false);
 	}
 }

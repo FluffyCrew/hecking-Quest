@@ -1,0 +1,24 @@
+﻿  main.cpp
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(103): warning C4018: '<': signed/unsigned mismatch
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(178): warning C4018: '<': signed/unsigned mismatch
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(279): warning C4305: 'argument': truncation from 'double' to 'float'
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(304): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(305): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(308): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(309): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(314): warning C4018: '<': signed/unsigned mismatch
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(325): warning C4018: '<': signed/unsigned mismatch
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(333): warning C4018: '<': signed/unsigned mismatch
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(359): warning C4018: '<': signed/unsigned mismatch
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(364): warning C4018: '<': signed/unsigned mismatch
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(475): warning C4018: '<': signed/unsigned mismatch
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(487): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(488): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(500): warning C4018: '<': signed/unsigned mismatch
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(510): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(511): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(623): warning C4018: '<': signed/unsigned mismatch
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(650): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+d:\users\bruefm\documents\visual studio 2015\projects\thegamenew\thegame\main.cpp(651): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+  theGame.vcxproj -> D:\Users\bruefm\Documents\Visual Studio 2015\Projects\theGameNew\Debug\theGame.exe
+  theGame.vcxproj -> D:\Users\bruefm\Documents\Visual Studio 2015\Projects\theGameNew\Debug\theGame.pdb (Partial PDB)
