@@ -1,0 +1,11 @@
+﻿  Texture.cpp
+c:\users\colin\documents\visual studio 2017\projects\hecking-quest\heckingquest\src\main.h(3): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "SDL.h": No such file or directory
+  Projectile.cpp
+c:\users\colin\documents\visual studio 2017\projects\hecking-quest\heckingquest\src\main.h(3): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "SDL.h": No such file or directory
+  main.cpp
+c:\users\colin\documents\visual studio 2017\projects\hecking-quest\heckingquest\src\main.h(3): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "SDL.h": No such file or directory
+  Environment.cpp
+c:\users\colin\documents\visual studio 2017\projects\hecking-quest\heckingquest\src\main.h(3): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "SDL.h": No such file or directory
+  Creature.cpp
+c:\users\colin\documents\visual studio 2017\projects\hecking-quest\heckingquest\src\main.h(3): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "SDL.h": No such file or directory
+  Code wird generiert...
